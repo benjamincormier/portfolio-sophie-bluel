@@ -1,39 +1,24 @@
 'use strict';
 
+// A SUPPRIMZER
+const testButton = document.querySelector('.test');
+
 // SELECTORS
+const main = document.getElementById('main');
 const gallery = document.querySelector('.gallery');
 const filters = document.querySelectorAll('.filter-btn');
+const toggleLoginModal = document.querySelector('.show-login-modal');
+const loginModal = document.querySelector('.login');
+const loginButton = document.querySelector('.login-btn');
 
-// HELPER FUNCTIONS
-const renderWork = function ({ imageUrl, title }) {
-  const HTML = `
-    <figure>
-        <img
-        src="${imageUrl}"
-        alt="${title}"
-        />
-        <figcaption>${title}</figcaption>
-    </figure>`;
-  gallery.insertAdjacentHTML('beforeend', HTML);
-};
-
-const deleteHTML = (parent) => parent.replaceChildren();
-
-const getAllWorks = async function () {
-  // get all works
-  try {
-    // get data
-    const res = await fetch('http://localhost:5678/api/works');
-    return await res.json();
-  } catch (err) {
-    console.error(err);
-  }
-};
+// DISPLAY LOGIN PAGE (MODAL) FUNCTIONALITY :
+toggleLoginModal.addEventListener('click', function () {
+  toggleView();
+});
 
 // MAIN ASYNC FUNCTION TO STORE DATA FROM FETCH CALL
 async function app() {
   const data = await getAllWorks();
-  console.log(data);
 
   // render all works on first loading
   data.forEach((work) => renderWork(work));
@@ -65,6 +50,14 @@ async function app() {
       }
     })
   );
+
+  // LOGIN FUNCTIONALITY
+  loginButton.addEventListener('click', handleLoginRequest);
+
+  // CHECKING IF TOKEN CAN BE ACCESSED ASYNCHRONOUSLY TO MAKE SURE THE LOGIN HAS RETURNED :
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 't') console.log(`Token = ${token}`);
+  });
 }
 
 app();
