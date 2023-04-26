@@ -11,110 +11,218 @@
       rel="stylesheet"
     />
     <meta name="description" content="" />
+
+    <script
+      src="https://kit.fontawesome.com/878bbbd526.js"
+      crossorigin="anonymous"
+    ></script>
+
     <link rel="stylesheet" href="./assets/style.css" />
-    <script defer src="/assets/helpers.js"></script>
-    <script defer src="/assets/getAllWorks.js"></script>
-    <script defer src="/assets/login.js"></script>
+
     <script defer src="/assets/script.js"></script>
   </head>
   <body>
-    <header>
-      <h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
-      <nav>
-        <ul>
-          <li>projets</li>
-          <li>contact</li>
-          <li class="show-login-modal">login</li>
-          <li><img src="./assets/icons/instagram.png" alt="Instagram" /></li>
-        </ul>
-      </nav>
-    </header>
-    <main id="main">
-      <section id="introduction">
-        <figure>
-          <img src="./assets/images/sophie-bluel.png" alt="" />
-        </figure>
-        <article>
-          <h2>Designer d'espace</h2>
-          <p>
-            Je raconte votre histoire, je valorise vos idées. Je vous accompagne
-            de la conception à la livraison finale du chantier.
-          </p>
-          <p>
-            Chaque projet sera étudié en commun, de façon à mettre en valeur les
-            volumes, les matières et les couleurs dans le respect de l’esprit
-            des lieux et le choix adapté des matériaux. Le suivi du chantier
-            sera assuré dans le souci du détail, le respect du planning et du
-            budget.
-          </p>
-          <p>
-            En cas de besoin, une équipe pluridisciplinaire peut-être constituée
-            : architecte DPLG, décorateur(trice)
-          </p>
-        </article>
-      </section>
-      <section id="portfolio">
-        <h2>Mes Projets</h2>
-        <ul class="filters-box">
-          <li class="filter">
-            <button
-              class="filter-btn filter-btn--active"
-              data-category="0"
-              id="tous"
-            >
-              Tous
+    <div class="edit-mode hidden">
+      <i class="fa-solid fa-pen-to-square"></i>
+      <p>Mode édition</p>
+      <button class="publish-changes-btn">publier les changements</button>
+    </div>
+    <div class="main-container">
+      <header>
+        <h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
+        <nav>
+          <ul>
+            <li>projets</li>
+            <li>contact</li>
+            <li class="show-login-modal">login</li>
+            <li class="hidden">logout</li>
+            <li><img src="./assets/icons/instagram.png" alt="Instagram" /></li>
+          </ul>
+        </nav>
+      </header>
+      <main id="main">
+        <section id="introduction">
+          <figure>
+            <img src="./assets/images/sophie-bluel.png" alt="" />
+          </figure>
+          <article>
+            <h2>Designer d'espace</h2>
+            <p>
+              Je raconte votre histoire, je valorise vos idées. Je vous
+              accompagne de la conception à la livraison finale du chantier.
+            </p>
+            <p>
+              Chaque projet sera étudié en commun, de façon à mettre en valeur
+              les volumes, les matières et les couleurs dans le respect de
+              l’esprit des lieux et le choix adapté des matériaux. Le suivi du
+              chantier sera assuré dans le souci du détail, le respect du
+              planning et du budget.
+            </p>
+            <p>
+              En cas de besoin, une équipe pluridisciplinaire peut-être
+              constituée : architecte DPLG, décorateur(trice)
+            </p>
+          </article>
+        </section>
+        <section id="portfolio">
+          <div class="my-projects__title">
+            <h2>Mes Projets</h2>
+            <button class="my-projects__edit-btn hidden">
+              <i class="fa-solid fa-pen-to-square"></i>
+              <span>modifier</span>
             </button>
-          </li>
-          <li class="filter">
-            <button class="filter-btn" data-category="1">Objets</button>
-          </li>
-          <li class="filter">
-            <button class="filter-btn" data-category="2">Appartements</button>
-          </li>
-          <li class="filter">
-            <button class="filter-btn" data-category="3">
-              Hôtels & Restaurants
-            </button>
-          </li>
-        </ul>
-        <div class="gallery">
-          <!-- <figure>
-            <img src="assets/images/abajour-tahina.png" alt="Abajour Tahina" />
-            <figcaption>Abajour Tahina</figcaption>
-          </figure> -->
-        </div>
-      </section>
-      <!-- <section id="contact">
-        <h2>Contact</h2>
-        <p>Vous avez un projet ? Discutons-en !</p>
-        <form action="#" method="post">
-          <label for="name">Nom</label>
-          <input type="text" name="name" id="name" />
-          <label for="email">Email</label>
-          <input type="email" name="email" id="email" />
-          <label for="message">Message</label>
-          <textarea name="message" id="message" cols="30" rows="10"></textarea>
-          <input type="submit" value="Envoyer" />
-        </form>
-      </section> -->
-    </main>
-    <section class="login hidden">
-      <h2>Log In</h2>
-      <form action="login" method="post" class="login-form">
-        <label for="loginEmail">E-mail</label>
-        <input type="email" name="loginEmail" id="loginEmail" />
-        <label for="password">Mot de passe</label>
-        <input type="password" name="password" id="password" ></input>
-        <input type="submit" class="login-btn" value="Se connecter" />
+          </div>
+          <ul class="filters-box">
+            <li class="filter">
+              <button
+                class="btn filter-btn--active"
+                data-category="0"
+                id="tous"
+              >
+                Tous
+              </button>
+            </li>
+            <li class="filter">
+              <button class="btn" data-category="1">Objets</button>
+            </li>
+            <li class="filter">
+              <button class="btn" data-category="2">Appartements</button>
+            </li>
+            <li class="filter">
+              <button class="btn" data-category="3">
+                Hôtels & Restaurants
+              </button>
+            </li>
+          </ul>
+          <div class="gallery">
+            <!-- <figure>
+          <img src="assets/images/abajour-tahina.png" alt="Abajour Tahina" />
+          <figcaption>Abajour Tahina</figcaption>
+        </figure> -->
+          </div>
+        </section>
+        <!-- <section id="contact">
+      <h2>Contact</h2>
+      <p>Vous avez un projet ? Discutons-en !</p>
+      <form action="#" method="post">
+        <label for="name">Nom</label>
+        <input type="text" name="name" id="name" />
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" />
+        <label for="message">Message</label>
+        <textarea name="message" id="message" cols="30" rows="10"></textarea>
+        <input type="submit" value="Envoyer" />
       </form>
-      <a href="#">Mot de passe oublié</a>
-    </section>
-    <footer>
-      <nav>
-        <ul>
-          <li>Mentions Légales</li>
-        </ul>
-      </nav>
-    </footer>
+    </section> -->
+      </main>
+      <section class="login hidden">
+        <h2>Log In</h2>
+        <form action="login" method="post" class="login-form">
+          <label for="loginEmail">E-mail</label>
+          <input type="email" name="loginEmail" id="loginEmail" />
+          <label for="password">Mot de passe</label>
+          <input type="password" name="password" id="password" />
+          <input
+            type="submit"
+            class="login-btn green-btn"
+            value="Se connecter"
+          />
+        </form>
+        <a href="#">Mot de passe oublié</a>
+      </section>
+      <footer>
+        <nav>
+          <ul>
+            <li>Mentions Légales</li>
+          </ul>
+        </nav>
+      </footer>
+    </div>
+    <div class="edit-modal hidden">
+      <button class="edit-modal__close-btn">&times;</button>
+      <h3 class="edit-modal__title">Galerie photo</h3>
+      <div class="edit-modal__gallery">
+        <figure class="edit-gallery__fig">
+          <img
+            class="edit-gallery__img"
+            src="assets/images/abajour-tahina.png"
+            alt="Abajour Tahina"
+          />
+        </figure>
+        <figure class="edit-gallery__fig">
+          <img
+            class="edit-gallery__img"
+            src="assets/images/appartement-paris-v.png"
+            alt="Appartement Paris V"
+          />
+        </figure>
+        <figure class="edit-gallery__fig">
+          <img
+            class="edit-gallery__img"
+            src="assets/images/restaurant-sushisen-londres.png"
+            alt="Restaurant Sushisen - Londres"
+          />
+        </figure>
+        <figure class="edit-gallery__fig">
+          <img
+            class="edit-gallery__img"
+            src="assets/images/la-balisiere.png"
+            alt="Villa “La Balisiere” - Port Louis"
+          />
+        </figure>
+        <figure class="edit-gallery__fig">
+          <img
+            class="edit-gallery__img"
+            src="assets/images/abajour-tahina.png"
+            alt="Abajour Tahina"
+          />
+        </figure>
+        <figure class="edit-gallery__fig">
+          <img
+            class="edit-gallery__img"
+            src="assets/images/appartement-paris-v.png"
+            alt="Appartement Paris V"
+          />
+        </figure>
+        <figure class="edit-gallery__fig">
+          <img
+            class="edit-gallery__img"
+            src="assets/images/restaurant-sushisen-londres.png"
+            alt="Restaurant Sushisen - Londres"
+          />
+        </figure>
+        <figure class="edit-gallery__fig">
+          <img
+            class="edit-gallery__img"
+            src="assets/images/la-balisiere.png"
+            alt="Villa “La Balisiere” - Port Louis"
+          />
+        </figure>
+        <figure class="edit-gallery__fig">
+          <img
+            class="edit-gallery__img"
+            src="assets/images/abajour-tahina.png"
+            alt="Abajour Tahina"
+          />
+        </figure>
+        <figure class="edit-gallery__fig">
+          <img
+            class="edit-gallery__img"
+            src="assets/images/appartement-paris-v.png"
+            alt="Appartement Paris V"
+          />
+        </figure>
+        <figure class="edit-gallery__fig">
+          <img
+            class="edit-gallery__img"
+            src="assets/images/restaurant-sushisen-londres.png"
+            alt="Restaurant Sushisen - Londres"
+          />
+        </figure>
+      </div>
+      <button class="btn green-btn">Ajouter une photo</button>
+      <button class="delete-gallery-btn">Supprimer la galerie</button>
+    </div>
+    <div class="edit-overlay hidden"></div>
   </body>
 </html>
