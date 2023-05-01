@@ -10,6 +10,8 @@ const state = {
   works: [],
 };
 
+const API_URL = 'http://localhost:5678/api';
+
 // SELECTORS
 const main = document.getElementById('main');
 const gallery = document.querySelector('.gallery');
@@ -21,13 +23,24 @@ const loginModal = document.querySelector('.login');
 const loginForm = document.querySelector('.login-form');
 const loginEmailInput = document.getElementById('loginEmail');
 const loginPasswordInput = document.getElementById('password');
+const editMode = document.querySelector('.edit-mode');
+const editButton = document.querySelector('.my-projects__edit-btn');
 
 // Modal
 const openEditModalBtn = document.querySelector('.my-projects__edit-btn');
 const editOverlay = document.querySelector('.edit-overlay');
 const editModal = document.querySelector('.edit-modal');
+const editModalPage1 = document.querySelector('.edit-modal--1');
+const editModalPage2 = document.querySelector('.edit-modal--2');
 const closeEditModalBtn = document.querySelector('.edit-modal__close-btn');
 const modalGallery = document.querySelector('.edit-modal__gallery');
+
+// Adding a picture
+const addAPictureButton = document.querySelector('.add-picture-btn');
+const addPictureForm = document.querySelector('.add-picture-form');
+const pictureInput = document.getElementById('new-picture');
+const previewImg = document.querySelector('.add-image__preview');
+const loadPictureButton = document.querySelector('.add-image__btn');
 
 /*********************************************************************************
  ******************** HELPERS FUNCTIONS
@@ -58,24 +71,32 @@ const clearLoginInputs = function () {
 };
 
 /*********************************************************************************
- ******************** APP CORE FUNCTIONS
+ ******************** APP MAIN FUNCTIONS
  **********************************************************************************/
+
+const renderHomeGallery = async function () {
+  deleteHTML(gallery);
+  try {
+    state.works = await getAllWorks();
+
+    // render all works on first loading
+    state.works.forEach((work) => renderWork(work));
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 const getAllWorks = async function () {
   // get all works
   try {
     // get data
-    const res = await fetch('http://localhost:5678/api/works');
+    const res = await fetch(`${API_URL}/works`);
     const data = await res.json();
     return data;
   } catch (err) {
     console.error(err);
   }
 };
-
-// SELECTORS
-const editMode = document.querySelector('.edit-mode');
-const editButton = document.querySelector('.my-projects__edit-btn');
 
 const handleLoginRequest = async function (e) {
   e.preventDefault();
@@ -88,7 +109,7 @@ const handleLoginRequest = async function (e) {
 
   // log in
   try {
-    const res = await fetch('http://localhost:5678/api/users/login', {
+    const res = await fetch(`${API_URL}/users/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -132,30 +153,38 @@ const handleLoginRequest = async function (e) {
   }
 };
 
+const renderModalGallery = function () {
+  const markup = state.works
+    .map((el) => {
+      return `
+      <div class="edit-gallery__fig" data-id="${el.id}">
+        <div class="gallery__icons-box">
+          <button class="gallery__delete-button">
+            <i class="fa fa-trash gallery__delete-icon"></i>
+          </button>
+        </div>
+        <img
+          class="edit-gallery__img"
+          src="${el.imageUrl}"
+          alt="${el.title}"
+        />
+        <p>éditer</p>
+      </div>
+  `;
+    })
+    .join('');
+
+  deleteHTML(modalGallery);
+
+  modalGallery.insertAdjacentHTML('beforeend', markup);
+};
+
 const openEditModal = function () {
   // 1) Displaying modal & overlay
   toggleEditModal();
 
   // 2) Rendering the gallery
-  const markup = state.works
-    .map((el) => {
-      return `
-        <figure class="edit-gallery__fig" data-id="${el.id}">
-          <img
-            class="edit-gallery__img"
-            src="${el.imageUrl}"
-            alt="${el.title}"
-          />
-        </figure>
-    `;
-    })
-    .join('');
-
-  console.log(markup);
-
-  deleteHTML(modalGallery);
-
-  modalGallery.insertAdjacentHTML('beforeend', markup);
+  renderModalGallery();
 };
 
 const toggleEditModal = function () {
@@ -163,24 +192,76 @@ const toggleEditModal = function () {
   editOverlay.classList.toggle('hidden');
 };
 
+/* DELETING A PICTURE */
+
+const handleDeleteRequest = async function (id) {
+  // 1) Delete Request
+  try {
+    const res = await fetch(`${API_URL}/works/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${state.token}`,
+      },
+    });
+
+    console.log(`Work #${id} has been deleted!`);
+
+    // 2) Update UI
+    await renderHomeGallery();
+    await renderModalGallery();
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+/* ADDING A PICTURE */
+
+const displayAddPictureForm = function () {
+  // 1) Uploading Modal UI (page 1 -> 2)
+  editModalPage1.classList.toggle('hidden');
+  editModalPage2.classList.toggle('hidden');
+
+  // 2) Loading the image from thml to Javascript
+  pictureInput.addEventListener('change', function () {
+    const files = [...pictureInput.files];
+    const file = files[0];
+
+    const reader = new FileReader();
+    reader.addEventListener('load', function () {
+      // Render image preview
+      previewImg.src = reader.result;
+    });
+
+    if (file) {
+      // Read file as data URL
+      reader.readAsDataURL(file);
+    }
+
+    // 3) Uploading UI : Rendeering preview
+    previewImg.classList.toggle('hidden');
+    loadPictureButton.classList.toggle('hidden');
+  });
+};
+
+const handleAddPictureRequest = function () {
+  console.log('adding a picture');
+  // 1) Checking if everything is correct
+
+  // 2) Fetch request
+};
+
 /*********************************************************************************
- ******************** EVENT LISTENERS
+ ******************** CONTROLLER
  **********************************************************************************/
 
 // MAIN ASYNC FUNCTION TO STORE DATA FROM FETCH CALL
 async function init() {
-  console.log('init started');
-
-  // DISPLAY LOGIN PAGE (MODAL) FUNCTIONALITY (METTRE DANS INIT)
+  // DISPLAY LOGIN PAGE FUNCTIONALITY
   toggleLoginModal.addEventListener('click', function () {
     toggleView();
   });
 
-  state.works = await getAllWorks();
-  console.log(state.works);
-
-  // render all works on first loading
-  state.works.forEach((work) => renderWork(work));
+  await renderHomeGallery();
 
   // FILTERS EVENT LISTENERS
   filters.forEach((filterButton) =>
@@ -220,6 +301,23 @@ async function init() {
   [closeEditModalBtn, editOverlay].forEach((el) =>
     el.addEventListener('click', toggleEditModal)
   );
+
+  // MODAL GALLERY - DELETING A PICTURE
+  modalGallery.addEventListener('click', function (e) {
+    if (
+      e.target.classList.contains('gallery__delete-button') ||
+      e.target.classList.contains('gallery__delete-icon')
+    ) {
+      const id = e.target.closest('.edit-gallery__fig').dataset.id;
+
+      // Delete HTTP Request
+      handleDeleteRequest(id);
+    }
+  });
+
+  // MODAL GALLERY - ADDIONG A PICTURE
+  addAPictureButton.addEventListener('click', displayAddPictureForm);
+  addPictureForm.addEventListener('submit', handleAddPictureRequest);
 }
 
 init();
