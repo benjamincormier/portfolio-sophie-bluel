@@ -8,6 +8,7 @@ S0phie
 const state = {
   token: '',
   works: [],
+  file: null,
 };
 
 const API_URL = 'http://localhost:5678/api';
@@ -25,6 +26,7 @@ const loginEmailInput = document.getElementById('loginEmail');
 const loginPasswordInput = document.getElementById('password');
 const editMode = document.querySelector('.edit-mode');
 const editButton = document.querySelector('.my-projects__edit-btn');
+const logoutButton = document.querySelector('.logout-btn');
 
 // Modal
 const openEditModalBtn = document.querySelector('.my-projects__edit-btn');
@@ -32,15 +34,20 @@ const editOverlay = document.querySelector('.edit-overlay');
 const editModal = document.querySelector('.edit-modal');
 const editModalPage1 = document.querySelector('.edit-modal--1');
 const editModalPage2 = document.querySelector('.edit-modal--2');
-const closeEditModalBtn = document.querySelector('.edit-modal__close-btn');
+const editModalPrevBtn = document.querySelector('.edit-modal__prev-btn');
+const closeEditModalBtns = document.querySelectorAll('.edit-modal__close-btn');
 const modalGallery = document.querySelector('.edit-modal__gallery');
 
 // Adding a picture
 const addAPictureButton = document.querySelector('.add-picture-btn');
 const addPictureForm = document.querySelector('.add-picture-form');
 const pictureInput = document.getElementById('new-picture');
+// const pictureInput = document.getElementById('new-picture');
 const previewImg = document.querySelector('.add-image__preview');
 const loadPictureButton = document.querySelector('.add-image__btn');
+const addPictureFormInputs = addPictureForm.querySelectorAll('input, select');
+const addPictureTitle = document.getElementById('title');
+const addPictureSelect = document.getElementById('category');
 
 /*********************************************************************************
  ******************** HELPERS FUNCTIONS
@@ -70,6 +77,16 @@ const clearLoginInputs = function () {
   loginPasswordInput.value = '';
 };
 
+const clearAddPictureInputs = function () {
+  console.log('clearing add picture inputs');
+  addPictureTitle.value = '';
+  // Nettoyage photos
+  state.file = null;
+  // 3) Uploading UI : Rendering preview
+  previewImg.classList.add('hidden');
+  loadPictureButton.classList.remove('hidden');
+};
+
 /*********************************************************************************
  ******************** APP MAIN FUNCTIONS
  **********************************************************************************/
@@ -77,10 +94,8 @@ const clearLoginInputs = function () {
 const renderHomeGallery = async function () {
   deleteHTML(gallery);
   try {
-    state.works = await getAllWorks();
-
-    // render all works on first loading
-    state.works.forEach((work) => renderWork(work));
+    state.works = await getAllWorks(); // API request
+    state.works.forEach((work) => renderWork(work)); // actual rendering
   } catch (err) {
     console.error(err);
   }
@@ -98,6 +113,14 @@ const getAllWorks = async function () {
   }
 };
 
+const logout = function () {
+  state.token = '';
+  logoutButton.classList.toggle('hidden');
+  toggleLoginModal.classList.toggle('hidden');
+  editMode.classList.toggle('hidden');
+  editButton.classList.toggle('hidden');
+};
+
 const handleLoginRequest = async function (e) {
   e.preventDefault();
 
@@ -105,7 +128,6 @@ const handleLoginRequest = async function (e) {
   const email = loginEmailInput.value;
   const password = loginPasswordInput.value;
   const data = { email, password };
-  console.log(data);
 
   // log in
   try {
@@ -127,27 +149,19 @@ const handleLoginRequest = async function (e) {
 
     const response = await res.json();
     state.token = response.token;
-
-    /* const abc = new FormData();
-    abc.append('image', img)
-    abc.append('title', "titre de l'image")
-    abc.append('image', img) 
-    
-    dans fetch:
-   -H 'accept: application/json' \
-    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4MjAyMTA3MywiZXhwIjoxNjgyMTA3NDczfQ.Jde-op7P2lRVWVo1B-zoAjDs-EJK_xfNnXLtLsNt5L4' \
-    -H 'Content-Type: multipart/form-data'
-    
-    */
     // updating UI
     // 2) retour sur accueil
+
+    // Afficher bouton Logout et masquer bouton login
+    logoutButton.classList.toggle('hidden');
+    toggleLoginModal.classList.toggle('hidden');
     toggleView();
 
     // 3) Afficher barre "Mode édition"
-    editMode.classList.remove('hidden');
+    editMode.classList.toggle('hidden');
 
     // 4) Afficher bouton "modifier" à côté du h2 "Mes Projets"
-    editButton.classList.remove('hidden');
+    editButton.classList.toggle('hidden');
   } catch (err) {
     console.error(`💥💥💥💥 ${err}`);
   }
@@ -156,6 +170,7 @@ const handleLoginRequest = async function (e) {
 const renderModalGallery = function () {
   const markup = state.works
     .map((el) => {
+      console.log(el);
       return `
       <div class="edit-gallery__fig" data-id="${el.id}">
         <div class="gallery__icons-box">
@@ -181,10 +196,18 @@ const renderModalGallery = function () {
 
 const openEditModal = function () {
   // 1) Displaying modal & overlay
-  toggleEditModal();
+  editModal.classList.remove('hidden');
+  editOverlay.classList.remove('hidden');
 
-  // 2) Rendering the gallery
+  // 3) Rendering the gallery
   renderModalGallery();
+};
+
+const closeEditModal = function () {
+  editModal.classList.add('hidden');
+  editOverlay.classList.add('hidden');
+  editModalPage1.classList.remove('hidden');
+  editModalPage2.classList.add('hidden');
 };
 
 const toggleEditModal = function () {
@@ -214,12 +237,15 @@ const handleDeleteRequest = async function (id) {
   }
 };
 
-/* ADDING A PICTURE */
+/* ADDING A PICTURE - FORM AND IMAGE PREVIEW */
 
 const displayAddPictureForm = function () {
   // 1) Uploading Modal UI (page 1 -> 2)
   editModalPage1.classList.toggle('hidden');
   editModalPage2.classList.toggle('hidden');
+  addPictureFormInputs.forEach((input) =>
+    input.addEventListener('click', function (e) {})
+  ); // à utiliser pour vérifier que tout est bien renseigné avant de soumettre formulaire
 
   // 2) Loading the image from thml to Javascript
   pictureInput.addEventListener('change', function () {
@@ -235,19 +261,50 @@ const displayAddPictureForm = function () {
     if (file) {
       // Read file as data URL
       reader.readAsDataURL(file);
+      state.file = file;
+      // 3) Uploading UI : Rendering preview
+      previewImg.classList.remove('hidden');
+      loadPictureButton.classList.add('hidden');
     }
-
-    // 3) Uploading UI : Rendeering preview
-    previewImg.classList.toggle('hidden');
-    loadPictureButton.classList.toggle('hidden');
   });
 };
 
-const handleAddPictureRequest = function () {
-  console.log('adding a picture');
+/* ADDING A PICTURE - FORM SUBMIT */
+
+const handleAddPictureRequest = async function (e) {
+  e.preventDefault();
+  console.log('adding a picture...');
+
+  const title = addPictureTitle.value;
+  const category = addPictureSelect.selectedIndex;
+  console.log(title, category, state.file);
+
   // 1) Checking if everything is correct
+  const data = new FormData();
+  data.append('image', state.file);
+  data.append('title', title);
+  data.append('category', category);
 
   // 2) Fetch request
+  try {
+    const res = await fetch(`${API_URL}/works`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${state.token}`,
+      },
+      body: data,
+    });
+    const response = await res.json();
+
+    // 3) Update UI
+    await clearAddPictureInputs();
+    await renderHomeGallery();
+    await renderModalGallery();
+    editModalPage1.classList.toggle('hidden');
+    editModalPage2.classList.toggle('hidden');
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 /*********************************************************************************
@@ -260,6 +317,8 @@ async function init() {
   toggleLoginModal.addEventListener('click', function () {
     toggleView();
   });
+
+  logoutButton.addEventListener('click', logout);
 
   await renderHomeGallery();
 
@@ -298,9 +357,14 @@ async function init() {
 
   openEditModalBtn.addEventListener('click', openEditModal);
 
-  [closeEditModalBtn, editOverlay].forEach((el) =>
-    el.addEventListener('click', toggleEditModal)
+  [...closeEditModalBtns, editOverlay].forEach((el) =>
+    el.addEventListener('click', closeEditModal)
   );
+
+  editModalPrevBtn.addEventListener('click', function () {
+    editModalPage1.classList.toggle('hidden');
+    editModalPage2.classList.toggle('hidden');
+  });
 
   // MODAL GALLERY - DELETING A PICTURE
   modalGallery.addEventListener('click', function (e) {

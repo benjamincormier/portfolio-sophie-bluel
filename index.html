@@ -35,7 +35,7 @@
             <li>projets</li>
             <li>contact</li>
             <li class="show-login-modal">login</li>
-            <li class="hidden">logout</li>
+            <li class="logout-btn hidden">logout</li>
             <li><img src="./assets/icons/instagram.png" alt="Instagram" /></li>
           </ul>
         </nav>
@@ -157,26 +157,27 @@
         <button class="edit-modal__prev-btn">&larr;</button>
         <button class="edit-modal__close-btn">&times;</button>
         <h3 class="edit-modal__title">Ajout photo</h3>
-        <div class="add-image-box">
-          <img src="" alt="" class="add-image__preview hidden" />
-          <i class="fa-solid fa-image add-image__icon"></i>
-          <label class="add-image__btn">
-            &plus; Ajouter photo
-            <input
-              type="file"
-              id="new-picture"
-              name="new-picture"
-              accept="image/png image/jpg"
-              size="4194304"
-            />
-          </label>
-          <p class="add-image__txt">jpg, png : 4mo max</p>
-        </div>
         <form action="add-picture" method="post" class="add-picture-form">
-          <label for="title">Titre</label>
-          <input type="text" name="title" id="title" />
+          <div class="add-image-box">
+            <img src="" alt="" class="add-image__preview hidden" />
+            <i class="fa-solid fa-image add-image__icon"></i>
+            <label class="add-image__btn">
+              &plus; Ajouter photo
+              <input
+                type="file"
+                id="new-picture"
+                name="new-picture"
+                accept="image/png image/jpg"
+                size="4194304"
+                required
+              />
+            </label>
+            <p class="add-image__txt">jpg, png : 4mo max</p>
+          </div>
+          <label for="title" class="add-image__txt">Titre</label>
+          <input type="text" name="title" id="title" required />
           <label for="category">Catégorie</label>
-          <select id="category" name="category">
+          <select id="category" name="category" required>
             <option value="1">Objets</option>
             <option value="2">Appartements</option>
             <option value="3">Hôtels et Restaurants</option>
