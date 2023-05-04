@@ -542,7 +542,7 @@ a:visited {
 
 .add-image__txt {
   color: #444444;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .add-image__preview {
@@ -566,6 +566,12 @@ input[type='file'] {
 **************************************** UTILS ****************************************
 */
 
+.spacer {
+  margin-top: 47px;
+  border-top: 1px solid #b3b3b3;
+}
+
 .hidden {
+  /* visibility: hidden; */
   display: none;
 }

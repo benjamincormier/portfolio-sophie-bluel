@@ -78,13 +78,13 @@ const clearLoginInputs = function () {
 };
 
 const clearAddPictureInputs = function () {
-  console.log('clearing add picture inputs');
   addPictureTitle.value = '';
   // Nettoyage photos
   state.file = null;
   // 3) Uploading UI : Rendering preview
   previewImg.classList.add('hidden');
   loadPictureButton.classList.remove('hidden');
+  // loadPictureButton.remove();
 };
 
 /*********************************************************************************
@@ -170,7 +170,6 @@ const handleLoginRequest = async function (e) {
 const renderModalGallery = function () {
   const markup = state.works
     .map((el) => {
-      console.log(el);
       return `
       <div class="edit-gallery__fig" data-id="${el.id}">
         <div class="gallery__icons-box">
@@ -243,9 +242,9 @@ const displayAddPictureForm = function () {
   // 1) Uploading Modal UI (page 1 -> 2)
   editModalPage1.classList.toggle('hidden');
   editModalPage2.classList.toggle('hidden');
-  addPictureFormInputs.forEach((input) =>
+  /*   addPictureFormInputs.forEach((input) =>
     input.addEventListener('click', function (e) {})
-  ); // à utiliser pour vérifier que tout est bien renseigné avant de soumettre formulaire
+  ); // à uti */
 
   // 2) Loading the image from thml to Javascript
   pictureInput.addEventListener('change', function () {
@@ -255,12 +254,12 @@ const displayAddPictureForm = function () {
     const reader = new FileReader();
     reader.addEventListener('load', function () {
       // Render image preview
-      previewImg.src = reader.result;
+      previewImg.src = reader.result; // src ne refait pas le rendu de la page
     });
 
     if (file) {
       // Read file as data URL
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file); // refait le rendu de la page
       state.file = file;
       // 3) Uploading UI : Rendering preview
       previewImg.classList.remove('hidden');
@@ -273,17 +272,20 @@ const displayAddPictureForm = function () {
 
 const handleAddPictureRequest = async function (e) {
   e.preventDefault();
-  console.log('adding a picture...');
 
   const title = addPictureTitle.value;
   const category = addPictureSelect.selectedIndex;
-  console.log(title, category, state.file);
 
   // 1) Checking if everything is correct
   const data = new FormData();
   data.append('image', state.file);
   data.append('title', title);
   data.append('category', category);
+
+  if (!state.file) {
+    window.alert("Merci d'ajouter une photo avant de valider ! ");
+    return;
+  } // if no image uploaded, return. Titles and categories are checked via submit form
 
   // 2) Fetch request
   try {
