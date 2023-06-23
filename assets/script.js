@@ -96,6 +96,7 @@ const renderHomeGallery = async function () {
   try {
     state.works = await getAllWorks(); // API request
     state.works.forEach((work) => renderWork(work)); // actual rendering
+    console.log(state.works);
   } catch (err) {
     console.error(err);
   }
@@ -274,7 +275,8 @@ const handleAddPictureRequest = async function (e) {
   e.preventDefault();
 
   const title = addPictureTitle.value;
-  const category = addPictureSelect.selectedIndex;
+  const category = addPictureSelect.selectedIndex + 1;
+  console.log(category);
 
   // 1) Checking if everything is correct
   const data = new FormData();
@@ -304,6 +306,7 @@ const handleAddPictureRequest = async function (e) {
     await renderModalGallery();
     editModalPage1.classList.toggle('hidden');
     editModalPage2.classList.toggle('hidden');
+    console.log(state.works);
   } catch (err) {
     console.error(err);
   }
